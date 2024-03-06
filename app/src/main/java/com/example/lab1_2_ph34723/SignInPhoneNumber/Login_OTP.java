@@ -1,11 +1,7 @@
 package com.example.lab1_2_ph34723.SignInPhoneNumber;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -17,7 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.lab1_2_ph34723.R;
-import com.example.lab1_2_ph34723.SignInEmail.MainActivity_Email;
+import com.example.lab1_2_ph34723.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -135,7 +131,7 @@ public class Login_OTP extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(Login_OTP.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = task.getResult().getUser();
-                            startActivity(new Intent(getApplicationContext(), MainActivity_Email.class));
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
                         } else {
                             Toast.makeText(Login_OTP.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
