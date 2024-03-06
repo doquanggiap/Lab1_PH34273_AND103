@@ -1,15 +1,20 @@
 package com.example.lab1_2_ph34723;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,6 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.lab1_2_ph34723.SignInEmail.Login_Email;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -58,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         btnLogout = findViewById(R.id.btnLogout);
 
-        ghiDuLieu();
-        docDulieu();
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +77,47 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void ghiDuLieu () {
+    public void dialog_them() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_add, null);
+        builder.setView(view);
+        Dialog dialog = builder.create();
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        TextInputEditText edtName, edtState, edtCountry, edtCapital, edtPopulation, edtRegions;
+
+        edtName = view.findViewById(R.id.edtName);
+        edtState = view.findViewById(R.id.edtState);
+        edtCountry = view.findViewById(R.id.edtCountry);
+        edtCapital = view.findViewById(R.id.edtCapital);
+        edtPopulation = view.findViewById(R.id.edtPopulation);
+        edtRegions = view.findViewById(R.id.edtRegions);
+
+        Button btnAdd = view.findViewById(R.id.btnThem);
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = edtName.getText().toString();
+                String state = edtState.getText().toString();
+                String country = edtCountry.getText().toString();
+                String capital = edtCapital.getText().toString();
+                String population = edtPopulation.getText().toString();
+                String regions = edtRegions.getText().toString();
+
+
+                if (name.isEmpty() || state.isEmpty() || country.isEmpty() || capital.isEmpty() || population.isEmpty() || regions.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Không được để trống", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+            }
+        });
+    }
+
+    private void ghiDuLieu() {
         Toast.makeText(this, "Đã chạy vào ghi dữ liệu", Toast.LENGTH_SHORT).show();
         CollectionReference cities = db.collection("cities");
 
@@ -105,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         cities.document("DC").set(data3);
     }
 
-    private void docDulieu () {
+    private void docDulieu() {
         Log.d("MainActivity", "docDulieu: da chạy vào day");
         DocumentReference docRef = db.collection("cities").document("SF");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
