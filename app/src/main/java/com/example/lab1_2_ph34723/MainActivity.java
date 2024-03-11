@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Toast.makeText(MainActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
+                        docDulieu();
                         btnAdd.setEnabled(true);
                         btnAdd.setText("Thêm");
                     }
@@ -264,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(MainActivity.this, "Thêm thất bại", Toast.LENGTH_SHORT).show();
+                        docDulieu();
                         btnAdd.setEnabled(true);
                         btnAdd.setText("Thêm");
                     }
