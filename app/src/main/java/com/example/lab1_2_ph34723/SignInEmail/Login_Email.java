@@ -19,12 +19,15 @@ import com.example.lab1_2_ph34723.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Login_Email extends AppCompatActivity {
     TextInputEditText txtUser, txtPass;
+    TextInputLayout layoutEmail, layoutPass;
+
     Button btndangnhap;
     TextView txtSignUp, txtResetPass;
     private FirebaseAuth mAuth;
@@ -60,18 +63,22 @@ public class Login_Email extends AppCompatActivity {
                 String email = txtUser.getText().toString();
                 String password = txtPass.getText().toString();
 
+                layoutEmail.setError(null);
+                layoutPass.setError(null);
+
                 if (email.isEmpty() && password.isEmpty()) {
-                    Toast.makeText(Login_Email.this, "Không được để trống", Toast.LENGTH_SHORT).show();
+                    layoutEmail.setError("Email đang để trống");
+                    layoutPass.setError("Mật khẩu đang để trống");
                     return;
                 }
 
                 if (email.isEmpty()) {
-                    Toast.makeText(Login_Email.this, "Chưa nhập email", Toast.LENGTH_SHORT).show();
+                    layoutEmail.setError("Email đang để trống");
                     return;
                 }
 
                 if (password.isEmpty()) {
-                    Toast.makeText(Login_Email.this, "Chưa nhập mật khẩu", Toast.LENGTH_SHORT).show();
+                    layoutPass.setError("Mật khẩu đang để trống");
                     return;
                 }
 
@@ -113,7 +120,7 @@ public class Login_Email extends AppCompatActivity {
             public void onClick(View v) {
                 String email = txtUser.getText().toString();
                 if (email.isEmpty()) {
-                    Toast.makeText(Login_Email.this, "Vui lòng nhập email của bạn", Toast.LENGTH_SHORT).show();
+                    layoutEmail.setError("Vui lòng nhập Email");
                     return;
                 }
                 mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -138,6 +145,8 @@ public class Login_Email extends AppCompatActivity {
         btndangnhap = findViewById(R.id.btndangnhap);
         txtSignUp = findViewById(R.id.txtSignUp);
         txtResetPass = findViewById(R.id.txtResetPass);
+        layoutEmail=findViewById(R.id.layoutEmail);
+        layoutPass=findViewById(R.id.layoutPass);
 
     }
 }

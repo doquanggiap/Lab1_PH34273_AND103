@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,27 +21,41 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lab1_2_ph34723.SignInEmail.Login_Email;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth auth;
-    Button btnLogout;
+    Button btnLogout, btnAdd;
     FirebaseFirestore db;
+    private List<City> cityList;
+    private CityAdapter cityAdapter;
+    RecyclerView rcView;
+
+
 
 
     public static final String NAME = "name";
@@ -63,7 +79,15 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         btnLogout = findViewById(R.id.btnLogout);
+        btnAdd = findViewById(R.id.btnAdd);
+        rcView = findViewById(R.id.rcView);
 
+        rcView.setLayoutManager(new LinearLayoutManager(this));
+
+        cityList = new ArrayList<>();
+        cityAdapter = new CityAdapter(this,cityList);
+        rcView.setAdapter(cityAdapter);
+        docDulieu();
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +99,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_them();
+            }
+        });
+
     }
+    private void docDulieu() {
+        CollectionReference citiesRef = db.collection("cities");
+
+        citiesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    cityList.clear();
+                    for (QueryDocumentSnapshot document:task.getResult()){
+                        City city = document.toObject(City.class);
+                        cityList.add(city);
+                    }
+                    cityAdapter.notifyDataSetChanged();
+                }else {
+                    Toast.makeText(MainActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
     public void dialog_them() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -85,87 +136,138 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        TextInputEditText edtName, edtState, edtCountry, edtCapital, edtPopulation, edtRegions;
+        TextInputEditText edtName, edtState, edtCountry, edtPopulation, edtRegions;
+        TextInputLayout layoutName, layoutState, layoutCountry, layoutPopulation, layoutRegions;
+        RadioButton rdoThuDo, rdoKPThuDo;
 
         edtName = view.findViewById(R.id.edtName);
         edtState = view.findViewById(R.id.edtState);
         edtCountry = view.findViewById(R.id.edtCountry);
-        edtCapital = view.findViewById(R.id.edtCapital);
         edtPopulation = view.findViewById(R.id.edtPopulation);
         edtRegions = view.findViewById(R.id.edtRegions);
+
+        layoutName = view.findViewById(R.id.layoutName);
+        layoutState = view.findViewById(R.id.layoutState);
+        layoutCountry = view.findViewById(R.id.layoutCountry);
+        layoutPopulation = view.findViewById(R.id.layoutPopulation);
+        layoutRegions = view.findViewById(R.id.layoutRegions);
+
+
+        rdoThuDo = view.findViewById(R.id.rdoThuDo);
+        rdoKPThuDo = view.findViewById(R.id.rdoKPThuDo);
+
 
         Button btnAdd = view.findViewById(R.id.btnThem);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = edtName.getText().toString();
-                String state = edtState.getText().toString();
-                String country = edtCountry.getText().toString();
-                String capital = edtCapital.getText().toString();
-                String population = edtPopulation.getText().toString();
-                String regions = edtRegions.getText().toString();
+                String name = edtName.getText().toString().trim();
+                String state = edtState.getText().toString().trim();
+                String country = edtCountry.getText().toString().trim();
 
+                String population = edtPopulation.getText().toString().trim();
+                String regions = edtRegions.getText().toString().trim();
 
-                if (name.isEmpty() || state.isEmpty() || country.isEmpty() || capital.isEmpty() || population.isEmpty() || regions.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Không được để trống", Toast.LENGTH_SHORT).show();
+                layoutName.setError(null);
+                layoutRegions.setError(null);
+                layoutState.setError(null);
+                layoutCountry.setError(null);
+                layoutPopulation.setError(null);
+
+                if (name.isEmpty() && state.isEmpty() && country.isEmpty() && population.isEmpty() && regions.isEmpty()) {
+                    layoutName.setError("Name đang để trống");
+                    layoutRegions.setError("Regions đang để trống");
+                    layoutState.setError("State đang để trống");
+                    layoutCountry.setError("Country đang để trống");
+                    layoutPopulation.setError("Population đang để trống");
+                    return;
+                }
+
+                if (name.isEmpty()) {
+                    layoutName.setError("Name đang để trống");
+                    return;
+                }
+
+                if (state.isEmpty()) {
+                    layoutState.setError("State đang để trống");
+                    return;
+                }
+
+                if (country.isEmpty()) {
+                    layoutCountry.setError("Country đang để trống");
+                    return;
+                }
+
+                if (!rdoThuDo.isChecked() && !rdoKPThuDo.isChecked()) {
+                    Toast.makeText(MainActivity.this, "Thành phố của bạn có phải là thủ đô không?", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                boolean capital = rdoThuDo.isChecked();
+
+                if (population.isEmpty()) {
+                    layoutPopulation.setError("Population đang để trống");
+                    return;
+                }
+
+                if (regions.isEmpty()) {
+                    layoutRegions.setError("Regions đang để trống");
                     return;
                 }
 
 
+                themDuLieu(
+                        country,
+                        name,
+                        Integer.parseInt(population),
+                        capital,
+                        regions,
+                        state
+                );
+                dialog.dismiss();
+
+                Log.d("MainActivity", "Đã chạy đến cuối");
             }
         });
     }
 
-    private void ghiDuLieu() {
-        Toast.makeText(this, "Đã chạy vào ghi dữ liệu", Toast.LENGTH_SHORT).show();
+    private void themDuLieu(String country, String name, int population, boolean capital, String regions, String state) {
+//        Log.d("MainActivity", "name: " + name);
+//        Log.d("MainActivity", "state: " + state);
+//        Log.d("MainActivity", "country: " + country);
+//        Log.d("MainActivity", "population: " + population);
+//        Log.d("MainActivity", "regions: " + regions);
+//        Log.d("MainActivity", "capital: " + capital);
+
+        btnAdd.setEnabled(false);
+        btnAdd.setText("Dang xu ly...");
+
         CollectionReference cities = db.collection("cities");
+        Map<String, Object> city = new HashMap<>();
+        city.put("name", name);
+        city.put("country", country);
+        city.put("population", population);
+        city.put("capital", capital);
+        city.put("regions", Arrays.asList(regions.split("\\s*,\\s*")));
+        city.put("state", state);
 
-        Map<String, Object> data1 = new HashMap<>();
-        data1.put(NAME, "San Francisco");
-        data1.put(STATE, "CA");
-        data1.put(COUNTRY, "USA");
-        data1.put(CAPITAL, false);
-        data1.put(POPULATION, 860000);
-        data1.put(REGIONS, Arrays.asList("west_coast", "norcal"));
-        cities.document("SF").set(data1);
-
-        Map<String, Object> data2 = new HashMap<>();
-        data2.put(NAME, "Los Angeles");
-        data2.put(STATE, "CA");
-        data2.put(COUNTRY, "USA");
-        data2.put(CAPITAL, false);
-        data2.put(POPULATION, 3900000);
-        data2.put(REGIONS, Arrays.asList("west_coast", "socal"));
-        cities.document("LA").set(data2);
-
-        Map<String, Object> data3 = new HashMap<>();
-        data3.put(NAME, "Washington D.C.");
-        data3.put(STATE, null);
-        data3.put(COUNTRY, "USA");
-        data3.put(CAPITAL, true);
-        data3.put(POPULATION, 680000);
-        data3.put(REGIONS, Arrays.asList("east_coast"));
-        cities.document("DC").set(data3);
-    }
-
-    private void docDulieu() {
-        Log.d("MainActivity", "docDulieu: da chạy vào day");
-        DocumentReference docRef = db.collection("cities").document("SF");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("HomeActivity", "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d("HomeActivity", "No such document");
+        cities.add(city)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast.makeText(MainActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
+                        btnAdd.setEnabled(true);
+                        btnAdd.setText("Thêm");
                     }
-                } else {
-                    Log.d("HomeActivity", "get failed with ", task.getException());
-                }
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this, "Thêm thất bại", Toast.LENGTH_SHORT).show();
+                        btnAdd.setEnabled(true);
+                        btnAdd.setText("Thêm");
+                    }
+                });
+
     }
 }

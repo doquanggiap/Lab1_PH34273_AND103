@@ -13,32 +13,46 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#4CAF50"
-            android:text="Thêm"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:gravity="center"
+            android:layout_weight="1">
 
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btnAdd"
+                android:layout_width="130sp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#4CAF50"
+                android:text="Thêm"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#E91E63"
-            android:text="Logout"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="130sp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#E91E63"
+                android:text="Logout"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
 
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

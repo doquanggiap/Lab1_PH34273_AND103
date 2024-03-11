@@ -21,12 +21,14 @@ import com.example.lab1_2_ph34723.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Register_Email extends AppCompatActivity {
 
     TextInputEditText txtUser, txtPass;
+    TextInputLayout layoutEmail, layoutPass;
     Button btnDangKy;
     TextView txtLogin;
 
@@ -64,33 +66,37 @@ public class Register_Email extends AppCompatActivity {
                 email = txtUser.getText().toString();
                 password = txtPass.getText().toString();
 
+                layoutEmail.setError(null);
+                layoutPass.setError(null);
+
                 if (email.isEmpty() && password.isEmpty()) {
-                    Toast.makeText(Register_Email.this, "Không được để trống", Toast.LENGTH_SHORT).show();
+                    layoutEmail.setError("Email đang để trống");
+                    layoutPass.setError("Mật khẩu đang để trống");
                     return;
                 }
 
                 if (email.isEmpty()) {
-                    Toast.makeText(Register_Email.this, "Chưa nhập email", Toast.LENGTH_SHORT).show();
+                    layoutEmail.setError("Email đang để trống");
                     return;
                 }
 
                 if (password.isEmpty()) {
-                    Toast.makeText(Register_Email.this, "Chưa nhập mật khẩu", Toast.LENGTH_SHORT).show();
+                    layoutPass.setError("Mật khẩu đang để trống");
                     return;
                 }
 
                 if (password.length() < 6) {
-                    Toast.makeText(Register_Email.this, "Mật khẩu phải từ 6 ký tự trở lên", Toast.LENGTH_SHORT).show();
+                    layoutPass.setError("Mật khẩu phải có ít nhất 6 ký tự");
                     return;
                 }
 
                 if (!password.matches("^(?=.*[a-zA-Z]).*$")) {
-                    Toast.makeText(Register_Email.this, "Mật khẩu phải có ít nhất 1 chữ cái", Toast.LENGTH_SHORT).show();
+                    layoutPass.setError("Mật khẩu phải có ít nhất 1 chữ cái");
                     return;
                 }
 
                 if (!password.matches("^(?=.*[0-9]).*$")) {
-                    Toast.makeText(Register_Email.this, "Mật khẩu phải có ít nhất 1 số", Toast.LENGTH_SHORT).show();
+                    layoutPass.setError("Mật khẩu phải có ít nhất 1 số");
                     return;
                 }
 
@@ -133,5 +139,7 @@ public class Register_Email extends AppCompatActivity {
         txtPass = findViewById(R.id.txtPass);
         btnDangKy = findViewById(R.id.btnDangKy);
         txtLogin = findViewById(R.id.txtLogin);
+        layoutEmail=findViewById(R.id.layoutEmail);
+        layoutPass=findViewById(R.id.layoutPass);
     }
 }
