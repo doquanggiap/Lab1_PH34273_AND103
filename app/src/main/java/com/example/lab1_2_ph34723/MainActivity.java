@@ -18,12 +18,14 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.lab1_2_ph34723.SignInEmail.Login_Email;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -54,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private List<City> cityList;
     private CityAdapter cityAdapter;
     RecyclerView rcView;
+    CardView animation;
+
+    private LottieAnimationView lottie;
 
 
 
@@ -79,14 +84,21 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         btnLogout = findViewById(R.id.btnLogout);
+        lottie = findViewById(R.id.lottie);
         btnAdd = findViewById(R.id.btnAdd);
         rcView = findViewById(R.id.rcView);
+        animation = findViewById(R.id.animation);
 
         rcView.setLayoutManager(new LinearLayoutManager(this));
 
         cityList = new ArrayList<>();
         cityAdapter = new CityAdapter(this,cityList);
         rcView.setAdapter(cityAdapter);
+
+        lottie.setVisibility(View.GONE);
+        animation.setVisibility(View.GONE);
+        lottie.cancelAnimation();
+
         docDulieu();
 
         btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -215,6 +227,9 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                lottie.setVisibility(View.VISIBLE);
+                animation.setVisibility(View.VISIBLE);
+                lottie.playAnimation();
 
                 themDuLieu(
                         country,
@@ -226,18 +241,15 @@ public class MainActivity extends AppCompatActivity {
                 );
                 dialog.dismiss();
 
-                Log.d("MainActivity", "Đã chạy đến cuối");
+                lottie.setVisibility(View.GONE);
+                animation.setVisibility(View.GONE);
+                lottie.cancelAnimation();
+
             }
         });
     }
 
     private void themDuLieu(String country, String name, int population, boolean capital, String regions, String state) {
-//        Log.d("MainActivity", "name: " + name);
-//        Log.d("MainActivity", "state: " + state);
-//        Log.d("MainActivity", "country: " + country);
-//        Log.d("MainActivity", "population: " + population);
-//        Log.d("MainActivity", "regions: " + regions);
-//        Log.d("MainActivity", "capital: " + capital);
 
         btnAdd.setEnabled(false);
         btnAdd.setText("Dang xu ly...");
